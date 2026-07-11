@@ -17,67 +17,52 @@ st.markdown("""
 <style>
 
 .stApp{
-background:linear-gradient(135deg,#0d0d0d,#171717,#1f1f1f);
+background:#0E1117;
 color:white;
 }
-
-#MainMenu{visibility:hidden;}
-footer{visibility:hidden;}
-header{visibility:hidden;}
 
 [data-testid="stSidebar"]{
-background:#111111;
+background:#161B22;
 }
 
-.hero{
-padding:30px;
-border-radius:20px;
-background:linear-gradient(90deg,#E50914,#4b0000);
-box-shadow:0px 10px 30px rgba(229,9,20,.35);
-}
-
-.hero h1{
-color:white;
-font-size:50px;
-font-weight:800;
-}
-
-.hero p{
-color:#f5f5f5;
-font-size:18px;
-}
-
-.card{
-background:#1b1b1b;
-padding:20px;
-border-radius:15px;
-border:1px solid #333;
-box-shadow:0px 5px 20px rgba(0,0,0,.3);
+h1,h2,h3,h4,h5,h6,p,label{
+color:white !important;
 }
 
 .stButton>button{
-width:100%;
 background:#E50914;
 color:white;
-font-size:18px;
-font-weight:bold;
-border-radius:10px;
 border:none;
-padding:12px;
+border-radius:10px;
+font-weight:bold;
+height:3rem;
 }
 
 .stButton>button:hover{
-background:#ff2d2d;
+background:#ff2a2a;
 }
 
-textarea{
-background:#222!important;
-color:white!important;
+.stTextArea textarea{
+background:#1F2937 !important;
+color:white !important;
+border:2px solid #E50914 !important;
+border-radius:10px;
+}
+
+.stFileUploader{
+background:#1F2937;
+padding:10px;
+border-radius:10px;
+}
+
+div[data-testid="metric-container"]{
+background:#1F2937;
+padding:15px;
+border-radius:10px;
 }
 
 </style>
 """, unsafe_allow_html=True)
-
 # -------------------- MODEL --------------------
 
 @st.cache_resource
