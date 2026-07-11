@@ -1,197 +1,98 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 from transformers import pipeline
 import evaluate
 import plotly.express as px
-from PIL import Image
-import os
+import plotly.graph_objects as go
 
-# ----------------------------
-# PAGE CONFIG
-# ----------------------------
+# -------------------- PAGE CONFIG --------------------
 st.set_page_config(
-    page_title="Dhurandhar AI Review Analyzer",
+    page_title="🎬 Dhurandhar Review Analyzer",
     page_icon="🎬",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
-# ----------------------------
-# PREMIUM CSS
-# ----------------------------
+# -------------------- CUSTOM CSS --------------------
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
-
-html, body, [class*="css"]{
-    font-family:Poppins;
-}
-
 .stApp{
-background:linear-gradient(135deg,#090909,#141414,#1d1d1d);
+background:linear-gradient(135deg,#0d0d0d,#171717,#1f1f1f);
 color:white;
 }
 
-/* Hide Streamlit Branding */
-#MainMenu{
-visibility:hidden;
-}
-
-footer{
-visibility:hidden;
-}
-
-header{
-visibility:hidden;
-}
-
-/* Sidebar */
+#MainMenu{visibility:hidden;}
+footer{visibility:hidden;}
+header{visibility:hidden;}
 
 [data-testid="stSidebar"]{
-background:#101010;
-border-right:1px solid #303030;
+background:#111111;
 }
-
-/* Hero */
 
 .hero{
 padding:30px;
-background:linear-gradient(90deg,#181818,#0b0b0b);
 border-radius:20px;
-box-shadow:0 0 30px rgba(229,9,20,.25);
+background:linear-gradient(90deg,#E50914,#4b0000);
+box-shadow:0px 10px 30px rgba(229,9,20,.35);
 }
 
-.hero-title{
-
-font-size:52px;
+.hero h1{
+color:white;
+font-size:50px;
 font-weight:800;
-color:#E50914;
-
 }
 
-.hero-sub{
-
+.hero p{
+color:#f5f5f5;
 font-size:18px;
-color:#DDDDDD;
-
 }
-
-/* Cards */
 
 .card{
-
-background:#181818;
-
-padding:25px;
-
-border-radius:18px;
-
-border:1px solid #2c2c2c;
-
-box-shadow:0px 8px 25px rgba(0,0,0,.4);
-
+background:#1b1b1b;
+padding:20px;
+border-radius:15px;
+border:1px solid #333;
+box-shadow:0px 5px 20px rgba(0,0,0,.3);
 }
 
-/* Button */
-
 .stButton>button{
-
 width:100%;
-
-background:linear-gradient(90deg,#E50914,#ff3b3b);
-
+background:#E50914;
 color:white;
-
 font-size:18px;
-
 font-weight:bold;
-
+border-radius:10px;
 border:none;
-
-border-radius:12px;
-
-padding:14px;
-
-transition:.3s;
-
+padding:12px;
 }
 
 .stButton>button:hover{
-
-transform:scale(1.02);
-
-box-shadow:0 0 20px rgba(229,9,20,.7);
-
+background:#ff2d2d;
 }
-
-/* Text Area */
 
 textarea{
-
-background:#1b1b1b!important;
-
+background:#222!important;
 color:white!important;
-
-border-radius:12px!important;
-
-}
-
-/* Metrics */
-
-[data-testid="metric-container"]{
-
-background:#181818;
-
-border-radius:15px;
-
-padding:20px;
-
-border:1px solid #333;
-
-}
-
-/* Tabs */
-
-.stTabs [data-baseweb="tab"]{
-
-font-size:17px;
-
-padding:12px;
-
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ----------------------------
-# LOAD MODEL
-# ----------------------------
+# -------------------- MODEL --------------------
 
 @st.cache_resource
 def load_model():
-
-    classifier = pipeline(
+    return pipeline(
         "sentiment-analysis",
         model="distilbert-base-uncased-finetuned-sst-2-english"
     )
-
-    return classifier
 
 classifier = load_model()
 
 accuracy_metric = evaluate.load("accuracy")
 f1_metric = evaluate.load("f1")
 
-# ----------------------------
-# SIDEBAR
-# ----------------------------
-
-st.sidebar.image(
-    "assets/logo.png",
-    use_container_width=True
-)
+# -------------------- SIDEBAR --------------------
 
 st.sidebar.title("🎬 Navigation")
 
@@ -199,7 +100,7 @@ page = st.sidebar.radio(
     "",
     [
         "🏠 Home",
-        "🤖 Sentiment Analysis",
+        "🤖 Analyze Review",
         "📊 Dataset Evaluation",
         "ℹ About"
     ]
@@ -207,78 +108,32 @@ page = st.sidebar.radio(
 
 st.sidebar.markdown("---")
 
-st.sidebar.info(
-"""
-Model
+st.sidebar.success("🤗 Hugging Face")
+st.sidebar.success("⚡ DistilBERT")
+st.sidebar.success("🚀 Streamlit")
 
-DistilBERT SST-2
-
-Framework
-
-🤗 HuggingFace
-
-Deployment
-
-Streamlit
-"""
-)
-
-# ----------------------------
-# HOME PAGE
-# ----------------------------
+# -------------------- HOME --------------------
 
 if page=="🏠 Home":
 
-    col1,col2=st.columns([1,2])
+    st.markdown("""
+    <div class="hero">
 
-    with col1:
+    <h1>🎬 Dhurandhar AI Review Analyzer</h1>
 
-        if os.path.exists("assets/dhurandhar.jpg"):
+    <p>
 
-            img=Image.open("assets/dhurandhar.jpg")
+    Analyze movie reviews using Hugging Face Transformers.
 
-            st.image(img,use_container_width=True)
+    Predict whether a review is Positive 😊 or Negative 😔
 
-        else:
+    instantly using DistilBERT.
 
-            st.image(
-"https://placehold.co/500x700/111111/E50914?text=Movie+Poster",
-use_container_width=True
-)
+    </p>
 
-    with col2:
+    </div>
 
-        st.markdown("""
-<div class="hero">
-
-<div class="hero-title">
-
-🎬 Dhurandhar AI Review Analyzer
-
-</div>
-
-<br>
-
-<div class="hero-sub">
-
-Analyze Netflix movie reviews using Hugging Face Transformers.
-
-Predict whether a review is Positive or Negative in seconds.
-
-Built using
-
-✔ Streamlit
-
-✔ Transformers
-
-✔ DistilBERT
-
-✔ Hugging Face
-
-</div>
-
-</div>
-""",unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
     st.write("")
 
@@ -287,755 +142,301 @@ Built using
     with c1:
 
         st.markdown("""
-<div class="card">
-
-<h2>🤖 AI Model</h2>
-
-DistilBERT SST-2
-
-</div>
-""",unsafe_allow_html=True)
-
-    with c2:
-
-        st.markdown("""
-<div class="card">
-
-<h2>⚡ Speed</h2>
-
-Real-time Prediction
-
-</div>
-""",unsafe_allow_html=True)
-
-    with c3:
-
-        st.markdown("""
-<div class="card">
-
-<h2>📈 Accuracy</h2>
-
-State-of-the-art
-
-</div>
-""",unsafe_allow_html=True)
-# ==========================================
-# SENTIMENT ANALYSIS PAGE
-# ==========================================
-
-elif page == "🤖 Sentiment Analysis":
-
-    st.markdown("""
-    <div class="hero">
-        <div class="hero-title">
-            🤖 AI Sentiment Analysis
-        </div>
-        <br>
-        <div class="hero-sub">
-            Enter a Netflix movie review and let the AI determine whether it is
-            Positive 😊 or Negative 😔.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.write("")
-
-    review = st.text_area(
-        "📝 Enter Movie Review",
-        height=220,
-        placeholder="""
-Example:
-
-Dhurandhar is one of the best action thrillers I have watched.
-The acting, background music and cinematography were outstanding.
-        """
-    )
-
-    analyze = st.button("🚀 Analyze Review")
-
-    if analyze:
-
-        if review.strip() == "":
-            st.warning("Please enter a review.")
-            st.stop()
-
-        with st.spinner("Analyzing review using DistilBERT..."):
-
-            result = classifier(review)[0]
-
-            sentiment = result["label"]
-            confidence = result["score"]
-
-        st.success("Prediction Completed!")
-
-        st.write("")
-
-        col1, col2 = st.columns([2,1])
-
-        # ------------------------
-        # LEFT CARD
-        # ------------------------
-
-        with col1:
-
-            if sentiment == "POSITIVE":
-
-                st.markdown(f"""
-                <div class="card">
-
-                <h1 style="color:#00ff99;">
-                😊 POSITIVE REVIEW
-                </h1>
-
-                <hr>
-
-                <h3>
-                Audience Reaction
-                </h3>
-
-                <p style="font-size:18px;">
-                The review expresses a positive opinion about the movie.
-                </p>
-
-                </div>
-                """, unsafe_allow_html=True)
-
-            else:
-
-                st.markdown(f"""
-                <div class="card">
-
-                <h1 style="color:#ff4d4d;">
-                😔 NEGATIVE REVIEW
-                </h1>
-
-                <hr>
-
-                <h3>
-                Audience Reaction
-                </h3>
-
-                <p style="font-size:18px;">
-                The review expresses a negative opinion about the movie.
-                </p>
-
-                </div>
-                """, unsafe_allow_html=True)
-
-        # ------------------------
-        # RIGHT CARD
-        # ------------------------
-
-        with col2:
-
-            st.metric(
-                "Confidence",
-                f"{confidence*100:.2f}%"
-            )
-
-            st.progress(float(confidence))
-
-        st.write("")
-
-        # ------------------------
-        # Plotly Gauge
-        # ------------------------
-
-        import plotly.graph_objects as go
-
-        gauge = go.Figure(go.Indicator(
-
-            mode="gauge+number",
-
-            value=confidence*100,
-
-            number={'suffix':"%"},
-
-            title={'text':"Prediction Confidence"},
-
-            gauge={
-
-                'axis':{'range':[0,100]},
-
-                'bar':{'color':'red'},
-
-                'steps':[
-
-                    {'range':[0,40],'color':'#3a3a3a'},
-
-                    {'range':[40,70],'color':'#666666'},
-
-                    {'range':[70,100],'color':'#00ff99'}
-
-                ]
-
-            }
-
-        ))
-
-        gauge.update_layout(
-
-            height=350,
-
-            paper_bgcolor="#111111",
-
-            font=dict(color="white",size=18)
-
-        )
-
-        st.plotly_chart(
-            gauge,
-            use_container_width=True
-        )
-
-        st.write("")
-
-        # ------------------------
-        # AI Summary Card
-        # ------------------------
-
-        st.markdown("""
-        <div class="card">
-
-        <h2>🤖 AI Interpretation</h2>
-
-        The model analyzed the semantic meaning of the review using
-        DistilBERT (Fine-tuned on SST-2).
-
-        It predicts whether the review is Positive or Negative based
-        on contextual understanding rather than simple keywords.
-
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.write("")
-
-        # ------------------------
-        # Probability Chart
-        # ------------------------
-
-        if sentiment == "POSITIVE":
-
-            chart = pd.DataFrame({
-
-                "Sentiment":[
-                    "Positive",
-                    "Negative"
-                ],
-
-                "Probability":[
-                    confidence,
-                    1-confidence
-                ]
-
-            })
-
-        else:
-
-            chart = pd.DataFrame({
-
-                "Sentiment":[
-                    "Negative",
-                    "Positive"
-                ],
-
-                "Probability":[
-                    confidence,
-                    1-confidence
-                ]
-
-            })
-
-        fig = px.bar(
-
-            chart,
-
-            x="Sentiment",
-
-            y="Probability",
-
-            text="Probability",
-
-            color="Sentiment",
-
-            color_discrete_sequence=["#E50914","#00C853"]
-
-        )
-
-        fig.update_layout(
-
-            template="plotly_dark",
-
-            height=400,
-
-            paper_bgcolor="#111111",
-
-            plot_bgcolor="#111111"
-
-        )
-
-        st.plotly_chart(
-
-            fig,
-
-            use_container_width=True
-
-        )
-
-        st.write("")
-
-        st.download_button(
-
-            "📥 Download Prediction",
-
-            data=f"""
-Review:
-
-{review}
-
-Prediction:
-
-{sentiment}
-
-Confidence:
-
-{confidence*100:.2f}%
-""",
-
-            file_name="prediction.txt"
-
-        )
-# ==========================================
-# DATASET EVALUATION
-# ==========================================
-
-elif page == "📊 Dataset Evaluation":
-
-    st.markdown("""
-    <div class="hero">
-        <div class="hero-title">
-            📊 Dataset Evaluation Dashboard
-        </div>
-
-        <br>
-
-        <div class="hero-sub">
-            Upload your dataset and evaluate the DistilBERT sentiment model.
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.write("")
-
-    uploaded_file = st.file_uploader(
-        "📂 Upload CSV Dataset",
-        type=["csv"]
-    )
-
-    if uploaded_file is not None:
-
-        df = pd.read_csv(uploaded_file)
-
-        st.success("Dataset Uploaded Successfully!")
-
-        st.write("")
-
-        st.subheader("Dataset Preview")
-
-        st.dataframe(df.head(), use_container_width=True)
-
-        st.write("")
-
-        if "Review" not in df.columns or "Class" not in df.columns:
-
-            st.error(
-                "Dataset must contain 'Review' and 'Class' columns."
-            )
-
-            st.stop()
-
-        reviews = df["Review"].astype(str).tolist()
-
-        labels = df["Class"].tolist()
-
-        with st.spinner("Running predictions on dataset..."):
-
-            predictions = classifier(reviews)
-
-        predicted = [item["label"] for item in predictions]
-
-        # --------------------------
-        # Convert labels
-        # --------------------------
-
-        if isinstance(labels[0], str):
-
-            true_labels = [
-
-                1 if str(x).upper() == "POSITIVE"
-
-                else 0
-
-                for x in labels
-
-            ]
-
-        else:
-
-            true_labels = labels
-
-        pred_labels = [
-
-            1 if x == "POSITIVE"
-
-            else 0
-
-            for x in predicted
-
-        ]
-
-        accuracy = accuracy_metric.compute(
-
-            references=true_labels,
-
-            predictions=pred_labels
-
-        )["accuracy"]
-
-        f1 = f1_metric.compute(
-
-            references=true_labels,
-
-            predictions=pred_labels
-
-        )["f1"]
-
-        st.write("")
-
-        # --------------------------
-        # Metrics
-        # --------------------------
-
-        c1, c2, c3 = st.columns(3)
-
-        with c1:
-            st.metric("Accuracy", f"{accuracy*100:.2f}%")
-
-        with c2:
-            st.metric("F1 Score", f"{f1:.3f}")
-
-        with c3:
-            st.metric("Reviews", len(df))
-
-        st.write("")
-
-        # --------------------------
-        # Result DataFrame
-        # --------------------------
-
-        result_df = df.copy()
-
-        result_df["Prediction"] = predicted
-
-        st.subheader("Prediction Results")
-
-        st.dataframe(
-
-            result_df,
-
-            use_container_width=True
-
-        )
-
-        st.write("")
-
-        # --------------------------
-        # Pie Chart
-        # --------------------------
-
-        sentiment_count = pd.DataFrame(
-
-            result_df["Prediction"].value_counts()
-
-        ).reset_index()
-
-        sentiment_count.columns = [
-
-            "Sentiment",
-
-            "Count"
-
-        ]
-
-        pie = px.pie(
-
-            sentiment_count,
-
-            values="Count",
-
-            names="Sentiment",
-
-            hole=.55,
-
-            color="Sentiment",
-
-            color_discrete_map={
-
-                "POSITIVE": "#00C853",
-
-                "NEGATIVE": "#E50914"
-
-            }
-
-        )
-
-        pie.update_layout(
-
-            template="plotly_dark",
-
-            paper_bgcolor="#111111",
-
-            plot_bgcolor="#111111",
-
-            height=450
-
-        )
-
-        st.plotly_chart(
-
-            pie,
-
-            use_container_width=True
-
-        )
-
-        # --------------------------
-        # Bar Chart
-        # --------------------------
-
-        bar = px.bar(
-
-            sentiment_count,
-
-            x="Sentiment",
-
-            y="Count",
-
-            text="Count",
-
-            color="Sentiment",
-
-            color_discrete_map={
-
-                "POSITIVE": "#00C853",
-
-                "NEGATIVE": "#E50914"
-
-            }
-
-        )
-
-        bar.update_layout(
-
-            template="plotly_dark",
-
-            height=450,
-
-            paper_bgcolor="#111111",
-
-            plot_bgcolor="#111111"
-
-        )
-
-        st.plotly_chart(
-
-            bar,
-
-            use_container_width=True
-
-        )
-
-        # --------------------------
-        # Download CSV
-        # --------------------------
-
-        csv = result_df.to_csv(index=False).encode("utf-8")
-
-        st.download_button(
-
-            "📥 Download Predictions",
-
-            csv,
-
-            file_name="Predicted_Reviews.csv",
-
-            mime="text/csv"
-
-        )
-
-        st.write("")
-
-        st.success("Evaluation Completed Successfully!")
-        # ==========================================
-# ABOUT PAGE
-# ==========================================
-
-elif page == "ℹ About":
-
-    st.markdown("""
-    <div class="hero">
-
-    <div class="hero-title">
-    🎬 About This Project
-    </div>
-
-    <br>
-
-    <div class="hero-sub">
-
-    AI Powered Netflix Movie Review Sentiment Analyzer
-
-    </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.write("")
-
-    c1, c2 = st.columns(2)
-
-    with c1:
-
-        st.markdown("""
-        <div class="card">
-
-        <h2>📖 Project Overview</h2>
-
-        <hr>
-
-        <p style="font-size:18px">
-
-        This application predicts whether a movie review is
-        <b>Positive</b> or <b>Negative</b> using a pretrained
-        Hugging Face Transformer model.
-
-        Users can:
-
-        ✔ Analyze individual reviews
-
-        ✔ Upload datasets
-
-        ✔ Evaluate Accuracy & F1 Score
-
-        ✔ Visualize Predictions
-
-        ✔ Download prediction results
-
-        </p>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-    with c2:
-
-        st.markdown("""
         <div class="card">
 
         <h2>🤖 AI Model</h2>
 
-        <hr>
+        DistilBERT SST-2
 
-        <p style="font-size:18px">
+        </div>
+        """, unsafe_allow_html=True)
 
-        Model
+    with c2:
 
-        <b>DistilBERT SST-2</b>
+        st.markdown("""
+        <div class="card">
 
-        <br><br>
+        <h2>⚡ Fast Prediction</h2>
 
-        Framework
+        Real-time Sentiment Analysis
 
-        Hugging Face Transformers
+        </div>
+        """, unsafe_allow_html=True)
 
-        <br><br>
+    with c3:
 
-        Task
+        st.markdown("""
+        <div class="card">
 
-        Binary Sentiment Classification
+        <h2>📈 Dataset Evaluation</h2>
 
-        <br><br>
-
-        Optimized for fast inference while maintaining
-        excellent accuracy.
-
-        </p>
+        Accuracy & F1 Score
 
         </div>
         """, unsafe_allow_html=True)
 
     st.write("")
 
-    st.subheader("🛠 Technology Stack")
+    st.info("👈 Select a feature from the sidebar to get started.")
 
-    a, b, c, d = st.columns(4)
+# -------------------- SENTIMENT ANALYSIS --------------------
 
-    with a:
-        st.metric("Frontend", "Streamlit")
+elif page=="🤖 Analyze Review":
 
-    with b:
-        st.metric("Model", "DistilBERT")
+    st.title("🤖 Movie Review Sentiment Analysis")
 
-    with c:
-        st.metric("Library", "Transformers")
+    review = st.text_area(
 
-    with d:
-        st.metric("Language", "Python")
+        "Enter your review",
 
-    st.write("")
+        height=200,
 
-    st.subheader("📈 Features")
+        placeholder="Example: Dhurandhar is an amazing movie with brilliant acting."
 
-    feature1, feature2 = st.columns(2)
+    )
 
-    with feature1:
+    if st.button("🚀 Analyze"):
 
-        st.success("✔ Real-time Sentiment Analysis")
+        if review.strip()=="":
 
-        st.success("✔ Confidence Score")
+            st.warning("Please enter a review.")
 
-        st.success("✔ Interactive Charts")
+        else:
 
-        st.success("✔ Dataset Evaluation")
+            with st.spinner("Analyzing..."):
 
-    with feature2:
+                result=classifier(review)[0]
 
-        st.success("✔ Accuracy & F1 Score")
+            sentiment=result["label"]
 
-        st.success("✔ CSV Upload")
+            confidence=result["score"]
 
-        st.success("✔ Download Predictions")
+            col1,col2=st.columns([2,1])
 
-        st.success("✔ Responsive UI")
+            with col1:
 
-    st.write("")
+                if sentiment=="POSITIVE":
+
+                    st.success("😊 Positive Review")
+
+                else:
+
+                    st.error("😔 Negative Review")
+
+            with col2:
+
+                st.metric(
+                    "Confidence",
+                    f"{confidence*100:.2f}%"
+                )
+
+            st.progress(float(confidence))
+
+            gauge = go.Figure(go.Indicator(
+
+                mode="gauge+number",
+
+                value=confidence*100,
+
+                number={'suffix':'%'},
+
+                gauge={
+
+                    'axis':{'range':[0,100]},
+
+                    'bar':{'color':'red'}
+
+                }
+
+            ))
+
+            gauge.update_layout(
+
+                template="plotly_dark",
+
+                height=320
+
+            )
+
+            st.plotly_chart(
+                gauge,
+                use_container_width=True
+            )
+
+            st.markdown("### 🤖 AI Interpretation")
+
+            if sentiment=="POSITIVE":
+
+                st.success(
+                    "The model believes this review expresses a positive opinion."
+                )
+
+            else:
+
+                st.error(
+                    "The model believes this review expresses a negative opinion."
+                )
+            # ==========================
+            # DATASET EVALUATION
+            # ==========================
+
+elif page == "📊 Dataset Evaluation":
+
+    st.title("📊 Dataset Evaluation")
+
+    uploaded_file = st.file_uploader(
+        "Upload CSV File",
+        type=["csv"]
+    )
+
+    if uploaded_file:
+
+        df = pd.read_csv(uploaded_file)
+
+        st.subheader("Dataset Preview")
+        st.dataframe(df.head(), use_container_width=True)
+
+        if "Review" not in df.columns or "Class" not in df.columns:
+            st.error("CSV must contain 'Review' and 'Class' columns.")
+            st.stop()
+
+        reviews = df["Review"].astype(str).tolist()
+        labels = df["Class"].tolist()
+
+        with st.spinner("Running AI predictions..."):
+            predictions = classifier(reviews)
+
+        pred_labels = [x["label"] for x in predictions]
+
+        if isinstance(labels[0], str):
+            actual = [1 if str(x).upper() == "POSITIVE" else 0 for x in labels]
+        else:
+            actual = labels
+
+        predicted = [1 if x == "POSITIVE" else 0 for x in pred_labels]
+
+        accuracy = accuracy_metric.compute(
+            references=actual,
+            predictions=predicted
+        )["accuracy"]
+
+        f1 = f1_metric.compute(
+            references=actual,
+            predictions=predicted
+        )["f1"]
+
+        a, b, c = st.columns(3)
+
+        a.metric("Accuracy", f"{accuracy*100:.2f}%")
+        b.metric("F1 Score", f"{f1:.3f}")
+        c.metric("Reviews", len(df))
+
+        result = df.copy()
+        result["Prediction"] = pred_labels
+
+        st.subheader("Prediction Results")
+        st.dataframe(result, use_container_width=True)
+
+        chart = result["Prediction"].value_counts().reset_index()
+        chart.columns = ["Sentiment", "Count"]
+
+        fig = px.pie(
+            chart,
+            values="Count",
+            names="Sentiment",
+            hole=0.55,
+            color="Sentiment",
+            color_discrete_map={
+                "POSITIVE": "#00C853",
+                "NEGATIVE": "#E50914"
+            }
+        )
+
+        fig.update_layout(
+            template="plotly_dark",
+            height=420
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        csv = result.to_csv(index=False).encode()
+
+        st.download_button(
+            "📥 Download Predictions",
+            csv,
+            "Predictions.csv",
+            "text/csv"
+        )
+
+# ==========================
+# ABOUT
+# ==========================
+
+elif page == "ℹ About":
+
+    st.title("🎬 About")
 
     st.markdown("""
-    ---
-    <center>
+### Dhurandhar AI Review Analyzer
 
-    <h3 style="color:#E50914;">
+A modern Streamlit web application that uses **Hugging Face DistilBERT**
+to classify movie reviews as **Positive** or **Negative**.
 
-    🎬 Dhurandhar AI Review Analyzer
+---
 
-    </h3>
+### ✨ Features
 
-    <p>
+- 🤖 AI Sentiment Analysis
+- ⚡ Real-time Prediction
+- 📊 Confidence Score
+- 📈 Dataset Evaluation
+- 📥 Download Predictions
+- 🌙 Netflix-style Dark UI
 
-    Developed using ❤️ Streamlit + Hugging Face Transformers
+---
 
-    </p>
+### 🛠 Technology Stack
 
-    </center>
-    """, unsafe_allow_html=True)
+- Python
+- Streamlit
+- Hugging Face Transformers
+- DistilBERT SST-2
+- Plotly
+- Pandas
+- Evaluate
+
+---
+
+### 👨‍💻 Model
+
+**distilbert-base-uncased-finetuned-sst-2-english**
+
+Fine-tuned on the Stanford Sentiment Treebank (SST-2).
+
+""")
+
+    st.info("Built using ❤️ Streamlit + Hugging Face Transformers")
+
+# ==========================
+# FOOTER
+# ==========================
+
+st.markdown("---")
+
+st.markdown(
+"""
+<center>
+
+<h4 style='color:#E50914;'>
+🎬 Dhurandhar AI Review Analyzer
+</h4>
+
+<p>
+Powered by Streamlit • Hugging Face • DistilBERT
+</p>
+
+</center>
+""",
+unsafe_allow_html=True
+)                
 
