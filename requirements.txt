@@ -1,8 +1,9 @@
 streamlit
 transformers
 torch
-evaluate
 pandas
+plotly
+evaluate
 scikit-learn
-sentencepiece
 accelerate
+sentencepiece
